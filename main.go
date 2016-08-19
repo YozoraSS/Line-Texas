@@ -72,7 +72,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO database1234.linebottext VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
 			var S string
-			var G string
 			db.QueryRow("SELECT Status FROM database1234.linebotuser WHERE MID = ?", content.From).Scan(&S) // get user status
 			if S == "default"{
 				if text.Text == "!加入房間" { // cheak if enter commands
