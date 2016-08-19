@@ -46,6 +46,7 @@ func InRoomNewGame(MID string){
 		
 		db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 20, 0, 0)
 		bot.SendText([]string{MID}, "You created a new game")
+		bot.SendText([]string{MID}, "You are Player1")
 	}else{
 		bot.SendText([]string{MID}, "There is already a game in this room!!")
 	}
