@@ -60,8 +60,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if content.ContentType == linebot.ContentTypeText{ // content type : text
 				text, _ := content.TextContent()
 				var nickname string
-				var rm int
-				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
 				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
 				//bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
 				bot.SendText([]string{os.Getenv("mymid")}, nickname+" :\n"+text.Text) // sent to tester
