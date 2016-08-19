@@ -57,6 +57,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
 			bot.SendText([]string{content.From}, "Welcome!")
+			bot.SendText([]string{content.From}, "請輸入您的暱稱")
+			text, _ := content.TextContent()
 			db.Exec("INSERT INTO database1234.linebotuser VALUES (?, ?, ?, ?)", info[0].MID, info[0].DisplayName, info[0].PictureURL, "default")
 			db.Close()
 		}else{
@@ -73,27 +75,27 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			var S string
 			db.QueryRow("SELECT Status FROM database1234.linebotuser WHERE MID = ?", content.From).Scan(&S) // get user status
 			if S == "default"{
-				if text.Text == "!joinchatroom" { // cheak if enter commands
+				if text.Text == "!加入房間" { // cheak if enter commands
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "joining", content.From)
 					bot.SendText([]string{content.From}, "Please enter chatroom number:")
 					db.Close()
-				}else if text.Text == "!createchatroom" {
+				}else if text.Text == "!開新房間" {
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "creating", content.From)
 					bot.SendText([]string{content.From}, "Please enter chatroom number:")
 				}else{
 					db.Close()
 					bot.SendText([]string{content.From}, "Hi,"+info[0].DisplayName+"!\n"+"These are my commands:")
-					bot.SendText([]string{content.From}, "!createchatroom\n"+"!joinchatroom\n"+"!leavechatroom")
+					bot.SendText([]string{content.From}, "!開新房間\n"+"!加入房間\n"+"!離開房間")
 				}
 			}else if S == "creating"{
 				var rn string
 				db.QueryRow("SELECT roomnum FROM database1234.chatroom WHERE roomnum = ?", text.Text).Scan(&rn)
 				if rn != ""{
-					bot.SendText([]string{content.From}, "Chatroom number repeated")
+					bot.SendText([]string{content.From}, "已有此房間")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				}else{
 					db.Exec("INSERT INTO database1234.chatroom VALUES (?, ?)", text.Text, content.From)
-					bot.SendText([]string{content.From}, "Please enter chatroom password:")
+					bot.SendText([]string{content.From}, "請輸入密碼:")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "creatingpw", content.From)
 				}
 				db.Close()
@@ -108,11 +110,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				var pw string
 				db.QueryRow("SELECT roompw FROM database1234.chatroom WHERE roomnum = ?", text.Text).Scan(&pw)
 				if pw == ""{
-					bot.SendText([]string{content.From}, "Chatroom : "+text.Text+"\ndoes not exist")
+					bot.SendText([]string{content.From}, "房間 : "+text.Text+"\n不存在")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				}else{
 					db.Exec("INSERT INTO database1234.chatroomuser VALUES (?, ?, ?)", info[0].MID+"q", info[0].DisplayName, text.Text)
-					bot.SendText([]string{content.From}, "Please enter chatroom password:")
+					bot.SendText([]string{content.From}, "請輸入密碼:")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "enterpw", content.From)
 				}
 				db.Close()
@@ -122,11 +124,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From+"q").Scan(&rn)
 				db.QueryRow("SELECT roompw FROM database1234.chatroom WHERE roomnum = ?", rn).Scan(&rp)
 				if text.Text == rp{ // correct password
-					bot.SendText([]string{content.From}, "Entered chatroom:\n"+rn)
+					bot.SendText([]string{content.From}, "進入房間:\n"+rn)
 					db.Exec("UPDATE database1234.chatroomuser SET MID = ? WHERE MID = ?", content.From, content.From+"q")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "chatting", content.From)
 				}else{
-					bot.SendText([]string{content.From}, "Wrong password")
+					bot.SendText([]string{content.From}, "密碼錯誤")
 					db.Exec("DELETE FROM database1234.chatroomuser WHERE MID = ?", content.From+"q")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				}
@@ -135,7 +137,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				if text.Text == "!leavechatroom"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
-					bot.SendText([]string{content.From}, "Left chatroom:\n"+N)
+					bot.SendText([]string{content.From}, "已離開房間:\n"+N)
 					db.Exec("DELETE FROM database1234.chatroomuser WHERE MID = ?", content.From)
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				}else{
