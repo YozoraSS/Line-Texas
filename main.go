@@ -72,6 +72,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO database1234.linebottext VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
 			var S string
+			var G string
 			db.QueryRow("SELECT Status FROM database1234.linebotuser WHERE MID = ?", content.From).Scan(&S) // get user status
 			if S == "default"{
 				if text.Text == "!加入房間" { // cheak if enter commands
@@ -132,13 +133,40 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				db.Close()
 			}else if S == "chatting"{
-				if text.Text == "!leavechatroom"{
+				text.Text = "!提示"
+				if text.Text == "!離開房間"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
 					bot.SendText([]string{content.From}, "已離開房間:\n"+N)
 					db.Exec("DELETE FROM database1234.chatroomuser WHERE MID = ?", content.From)
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
-				}else{
+				}
+				else if text.Text == "!提示"{
+					bot.SendText([]string{content.From}, "系統指令提示:\n!建立新牌局\n!進入牌局\n!離開牌局\n!離開房間")
+				}
+				else if text.Text == "!建立新牌局"{
+					var N string
+					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
+					row,_ := db.Query("SELECT MID FROM database1234.chatroomuser WHERE roomnum = ?", N)
+					for row.Next() {
+						var mid1 string
+						row.Scan(&mid1)
+						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 建立新牌局")
+					}
+					//把房間state改成遊戲中
+				}
+				else if text.Text == "!進入牌局"{
+					var N string
+					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
+					row,_ := db.Query("SELECT MID FROM database1234.chatroomuser WHERE roomnum = ?", N)
+					for row.Next() {
+						var mid1 string
+						row.Scan(&mid1)
+						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 進入牌局")
+					}
+					//把玩家state改成playing //S == "playing"
+				}
+				else{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
 					row,_ := db.Query("SELECT MID FROM database1234.chatroomuser WHERE roomnum = ?", N)
