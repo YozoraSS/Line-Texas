@@ -15,19 +15,7 @@ import (
 回傳使用者是否正在遊戲
 */
 var bot *linebot.Client
-func UserGamming(MID string) bool{
-	var GameID int
-	GameID = 0;
-	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
-	db.QueryRow("SELECT GameID FROM sql6131889.GameAction WHERE MID = ? and Cancel = 0", MID ).Scan(&GameID)
-	if GameID == 0{
-		return false
-	}else{
-		return true
-	}
 
-
-}
 func InRoomInst(MID string){
 	/*strID := os.Getenv("ChannelID")
 	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
