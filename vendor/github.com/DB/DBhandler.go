@@ -5,7 +5,6 @@
 package DB
 import (
 	"os"
-	"github.com/line/line-bot-sdk-go/linebot"
 	"database/sql"
 	_"github.com/go-sql-driver/mysql"
 )
