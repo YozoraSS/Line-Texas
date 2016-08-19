@@ -142,6 +142,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					db.Exec("DELETE FROM database1234.chatroomuser WHERE MID = ?", content.From)
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				}else if text.Text == "!提示"{
+					var rn string
+					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From+"q").Scan(&rn)
 					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n您目前位於房間: "+rn+"\n系統指令提示:\n!建立新牌局\n!進入牌局\n!離開牌局\n!離開房間")
 				}else if text.Text == "!建立新牌局"{
 					var N string
