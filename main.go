@@ -97,6 +97,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					db.QueryRow("SELECT RoomName FROM sql6131889.Room WHERE RoomPass = ?", text.Text).Scan(&rn)
 					bot.SendText([]string{content.From}, "Room: "+rn+"\ncreated")
 					db.Exec("UPDATE sql6131889.User SET UserRoom = ? WHERE MID = ?", rn, content.From)
+					db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 1000, content.From)
 					bot.SendText([]string{content.From}, "You are in room "+rn)
 				}else if S == 11{
 					var pw string
@@ -127,6 +128,31 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
 						bot.SendText([]string{content.From}, "Left chatroom:\n"+R)
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
+						db.Exec("UPDATE sql6131889.User SET UserRoom = ? WHERE MID = ?", 1000, content.From)
+					}else if text.Text == "!inst"{
+						var haveGame string
+						var RID string
+						var R string
+						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
+						db.QueryRow("SELECT ID FROM sql6131889.User WHERE  RoomName = ?", R).Scan(&RID)
+						db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
+						if haveGame == ""{
+							bot.SendText([]string{content.From}, "You can use these instruction:\n!leavechatroom\n!newgame")
+						}else{
+							bot.SendText([]string{content.From}, "You can use these instruction:\n!leavechatroom")
+						}
+					}else if text.Text == "!newgame"{
+						var haveGame string
+						var RID string
+						var R string
+						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
+						db.QueryRow("SELECT ID FROM sql6131889.User WHERE  RoomName = ?", R).Scan(&RID)
+						db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
+						if haveGame == ""{
+							db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1)VALUES (?, ?, ?, ?, ?)", Texas Poker, RID, 100, 0, info[0].MID)
+						}else{
+							bot.SendText([]string{content.From}, "There is already a game in this room!!")
+						}
 					}else{
 						var R string
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
