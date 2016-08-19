@@ -132,7 +132,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				db.Close()
 			}else if S == "chatting"{
-				text.Text = "!提示"
 				if text.Text == "!離開房間"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
