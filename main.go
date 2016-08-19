@@ -136,6 +136,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						DB.InRoomNewGame(content.From)
 					}else if text.Text == "!joingame"{
 						DB.InRoomJoinGame(content.From)
+					}else if text.Text == "!roomreset"{
+						DB.InRoomReset(content.From)
 					}else{
 						var R string
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
