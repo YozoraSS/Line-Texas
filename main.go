@@ -65,10 +65,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			info := prof.Contacts
 			bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
-			db.Exec("INSERT INTO database1234.linebottext VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
+			db.Exec("INSERT INTO sql6131889.text VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
 			var S string
-			db.QueryRow("SELECT Status FROM database1234.linebotuser WHERE MID = ?", content.From).Scan(&S) // get user status
+			db.QueryRow("SELECT Status FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
 			if S == "default"{
+				if text.Text == "!提示" {
+					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n您目前位於大廳\n系統指令提示:\n!開新房間\n!進入房間\n")
+				}}/*else{
 				if text.Text == "!進入房間" { // cheak if enter commands
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "joining", content.From)
 					bot.SendText([]string{content.From}, "請輸入房間號碼:")
@@ -184,6 +187,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO database1234.linebotsticker VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, sticker.PackageID, sticker.ID, sticker.Version)
 			db.Close()
-		}
+		*/}
 	}
 }
