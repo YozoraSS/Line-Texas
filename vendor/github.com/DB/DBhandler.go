@@ -54,11 +54,15 @@ func InRoomNewGame(MID string){
 	var haveGame string
 	var RID string
 	var R string
+	var GID string
 	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
+	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
 		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, MID, "0", 0)
+		
+		db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 20, , 0)
 		bot.SendText([]string{MID}, "You created a new game")
 	}else{
 		bot.SendText([]string{MID}, "There is already a game in this room!!")
@@ -73,13 +77,52 @@ func InRoomJoinGame(MID string){
 	var haveGame string
 	var RID string
 	var R string
+	var GID string
 	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
+	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
-		bot.SendText([]string{MID}, "Please create a new game")
+		bot.SendText([]string{MID}, "Please create a new game use instruction:\n!newgame")
 	}else{
-		db.Exec("UPDATE sql6131889.Game SET UserStatus = ? WHERE MID = ?", 10, MID)
+		var playerInGame string
+		db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&playerInGame)
+		if playerInGame == "" {
+			row,_ := db.Query("SELECT PlayerX FROM sql6131889.GameAction WHERE GameID = ?", GID)
+			var nextPlayer int
+			for row.Next() {
+				row.Scan(&nextPlayer)
+			}
+			nextPlayer = nextPlayer+1
+		}else{
+			nextPlayer = 50
+		}
+		if nextPlayer <= 29 {
+			db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 20, nextPlayer, 0)
+			if nextPlayer == 21 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer2 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 22 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer3 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 23 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer4 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 24 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer5 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 25 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer6 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 26 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer7 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 27 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer8 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 28 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer9 = ? WHERE GID = ?", MID, GID)
+			}else if nextPlayer == 29 {
+				db.Exec("UPDATE sql6131889.Game SET GamePlayer10 = ? WHERE GID = ?", MID, GID)
+			}
+		}else if nextPlayer == 50 {
+			bot.SendText([]string{MID}, "You are already in this game!!")
+		}else{
+			bot.SendText([]string{MID}, "Full of player in this room!!")
+		}
 	}
 	db.Close()
 }
