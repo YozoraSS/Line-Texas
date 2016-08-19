@@ -56,6 +56,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if M == ""{ // new user
 				bot.SendText([]string{content.From}, "Welcome!") // put user profile into database
 				db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 10, "菜鳥", info[0].PictureURL)		
+				bot.SendText([]string{content.From}, "Please enter your nick name:")
+				db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 400, content.From)
 			}
 			if content.ContentType == linebot.ContentTypeText{ // content type : text
 				text, _ := content.TextContent()
