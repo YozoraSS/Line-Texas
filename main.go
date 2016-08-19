@@ -64,8 +64,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				var nickname string
 				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
 				//bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
-				bot.SendText([]string{os.Getenv("mymid")}, nickname+" :\n"+text.Text) // sent to tester
+				bot.SendText([]string{os.Getenv("mymid")}, nickname+" :\n"+text.Text+"\nMID = "+info[0].MID) // sent to tester
 				db.Exec("INSERT INTO sql6131889.text (MID, Text)VALUES (?, ?)", info[0].MID, text.Text)
+				bot.SendText([]string{os.Getenv("mymid")}, "after")
 				var S int
 				db.QueryRow("SELECT UserStatus FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
 				if S == 10{
