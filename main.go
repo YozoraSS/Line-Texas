@@ -11,7 +11,7 @@
 // limitations under the License.
 
 package main 
-//qq
+
 import (
 	//"fmt"
 	//"log"
@@ -49,27 +49,21 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		content := result.Content()
 		if content != nil { // put user profile into database
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
-			row,_ := db.Query("SELECT MID FROM database1234.linebotuser WHERE MID = ?", content.From)
 			var M string
-			row.Next()
-			row.Scan(&M)
+			db.QueryRow("SELECT MID FROM sql6131889.User WHERE MID = ?", content.From).Scan(&M)
 			if M == ""{ // new user
 			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
 			bot.SendText([]string{content.From}, "歡迎!")
 			bot.SendText([]string{content.From}, "請輸入您的暱稱")
-			db.Exec("INSERT INTO database1234.linebotuser VALUES (?, ?, ?, ?)", info[0].MID, info[0].DisplayName, info[0].PictureURL, "default")
-			db.Close()
-		}else{
-			db.Close()
-		}
+			db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 1, "菜鳥", info[0].PictureURL)
+			}
 		}
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText{ // content type : text
 			text, _ := content.TextContent()
 			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
-			//bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
-			bot.SendText([]string{os.Getenv("mymid")}, "獲取 "+info[0].DisplayName+" 的訊息")
+			bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO database1234.linebottext VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
 			var S string
@@ -115,7 +109,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				}else{
 					db.Exec("INSERT INTO database1234.chatroomuser VALUES (?, ?, ?)", info[0].MID+"q", info[0].DisplayName, text.Text)
-					bot.SendText([]string{content.From}, "請輸入密碼:")
+					bot.SendText([]string{content.From}, "請輸入房間密碼:")
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "enterpw", content.From)
 				}
 				db.Close()
@@ -156,7 +150,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 進入牌局")
 					}
 					//把房間state改成遊戲中
-					//把此玩家state改成playing //S == "playing"
+					//把玩家state改成playing //S == "playing"
 				}else if text.Text == "!進入牌局"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
@@ -191,5 +185,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db.Exec("INSERT INTO database1234.linebotsticker VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, sticker.PackageID, sticker.ID, sticker.Version)
 			db.Close()
 		}
+		
+		
 	}
 }
