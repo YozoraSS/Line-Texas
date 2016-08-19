@@ -50,7 +50,7 @@ func InRoomNewGame(MID string){
 		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, MID, "0", 0)
 		
 		db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 1, 0, 0)
-		db.Exec("INSERT INTO sql6131889.Game (PlayerNum) VALUE (?)", 1)
+		db.Exec("UPDATE sql6131889.Game SET PlayerNum = ? WHERE ID = ?", 1, GID)
 		bot.SendText([]string{MID}, "You created a new game")
 		bot.SendText([]string{MID}, "You are Player1")
 	}else{
@@ -120,7 +120,7 @@ func InRoomJoinGame(MID string){
 				db.Exec("UPDATE sql6131889.Game SET GamePlayer10 = ? WHERE ID = ?", MID, GID)
 				bot.SendText([]string{MID}, "You are Player10")
 			}
-			db.Exec("INSERT INTO sql6131889.Game (PlayerNum) VALUE (?)", nextPlayer)
+			db.Exec("UPDATE sql6131889.Game SET PlayerNum = ? WHERE ID = ?", nextPlayer, GID)
 		}else if nextPlayer == 50 {
 			bot.SendText([]string{MID}, "You are already in this game!!")
 		}else{
