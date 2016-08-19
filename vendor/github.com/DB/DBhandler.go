@@ -4,10 +4,6 @@
 */
 package DB
 import (
-	//"fmt"
-	//"log"
-	//"math/rand" rand.Intn(100)
-	"net/http"
 	"os"
 	"strconv"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -33,6 +29,8 @@ func UserGamming(MID string) bool{
 
 }
 func InRoomInst(MID string){
+	strID := os.Getenv("ChannelID")
+	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
@@ -49,6 +47,8 @@ func InRoomInst(MID string){
 	db.Close()
 }
 func InRoomNewGame(MID string){
+	strID := os.Getenv("ChannelID")
+	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
@@ -66,6 +66,8 @@ func InRoomNewGame(MID string){
 	db.Close()
 }
 func InRoomJoinGame(MID string){
+	strID := os.Getenv("ChannelID")
+	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
