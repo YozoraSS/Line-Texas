@@ -149,7 +149,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						db.QueryRow("SELECT ID FROM sql6131889.User WHERE  RoomName = ?", R).Scan(&RID)
 						db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 						if haveGame == ""{
-							db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, info[0].MID, "0", 0)
+							db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, info[0].MID, "0", 0)
 							bot.SendText([]string{content.From}, "You created a new game")
 						}else{
 							bot.SendText([]string{content.From}, "There is already a game in this room!!")
