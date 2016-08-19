@@ -59,6 +59,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 1, "菜鳥", info[0].PictureURL)
 			}
 		}
+		prof,_ := bot.GetUserProfile([]string{content.From})
+			info := prof.Contacts
 		text, _ := content.TextContent()
 		bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText{ // content type : text
