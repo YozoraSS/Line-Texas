@@ -83,7 +83,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					bot.SendText([]string{content.From}, "Please enter chatroom number:")
 				}else{
 					db.Close()
-					bot.SendText([]string{content.From}, "Hi,"+info[0].DisplayName+"!\n"+"These are my commands:")
+					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n"+"系統指令提示:")
 					bot.SendText([]string{content.From}, "!開新房間\n"+"!加入房間\n"+"!離開房間")
 				}
 			}else if S == "creating"{
@@ -103,7 +103,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
 				var rn string
 				db.QueryRow("SELECT roomnum FROM database1234.chatroom WHERE roompw = ?", text.Text).Scan(&rn)
-				bot.SendText([]string{content.From}, "Room: "+rn+"\ncreated")
+				bot.SendText([]string{content.From}, "房間: "+rn+"\n已建立")
 				db.Close()
 			}else if S == "joining"{
 				var pw string
