@@ -58,10 +58,10 @@ func InRoomNewGame(MID string){
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
-		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, info[0].MID, "0", 0)
-		bot.SendText([]string{content.From}, "You created a new game")
+		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, MID, "0", 0)
+		bot.SendText([]string{MID}, "You created a new game")
 	}else{
-		bot.SendText([]string{content.From}, "There is already a game in this room!!")
+		bot.SendText([]string{MID}, "There is already a game in this room!!")
 	}
 	db.Close()
 }
@@ -77,7 +77,7 @@ func InRoomJoinGame(MID string){
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
-		bot.SendText([]string{content.From}, "Please create a new game")
+		bot.SendText([]string{MID}, "Please create a new game")
 	}else{
 		db.Exec("UPDATE sql6131889.Game SET UserStatus = ? WHERE MID = ?", 10, MID)
 	}
