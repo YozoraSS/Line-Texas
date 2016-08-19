@@ -22,6 +22,7 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 	"database/sql"
 	_"github.com/go-sql-driver/mysql"
+	"github.com/DB"
 )
 
 var bot *linebot.Client
@@ -130,30 +131,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
 						db.Exec("UPDATE sql6131889.User SET UserRoom = ? WHERE MID = ?", 1000, content.From)
 					}else if text.Text == "!inst"{
-						var haveGame string
-						var RID string
-						var R string
-						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
-						db.QueryRow("SELECT ID FROM sql6131889.User WHERE  RoomName = ?", R).Scan(&RID)
-						db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
-						if haveGame == ""{
-							bot.SendText([]string{content.From}, "You can use these instruction:\n!leavechatroom\n!newgame")
-						}else{
-							bot.SendText([]string{content.From}, "You can use these instruction:\n!leavechatroom")
-						}
+						DB.InRoomInst(content.From)
 					}else if text.Text == "!newgame"{
-						var haveGame string
-						var RID string
-						var R string
-						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
-						db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
-						db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
-						if haveGame == ""{
-							db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, info[0].MID, "0", 0)
-							bot.SendText([]string{content.From}, "You created a new game")
-						}else{
-							bot.SendText([]string{content.From}, "There is already a game in this room!!")
-						}
+						DB.InRoomNewGame(content.From)
+					}else if text.Text == "!joingame"{
+						DB.InRoomJoinGame(content.From)
 					}else{
 						var R string
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
