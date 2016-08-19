@@ -11,10 +11,13 @@ import (
 	_"github.com/go-sql-driver/mysql"
 )
 
+var bot *linebot.Client
+
 func InRoomInst(MID string){
-	/*strID := os.Getenv("ChannelID")
+	strID := os.Getenv("ChannelID")
 	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
+	/*
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
 	var RID string
