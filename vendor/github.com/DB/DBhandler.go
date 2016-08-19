@@ -5,7 +5,6 @@
 package DB
 import (
 	"os"
-	"strconv"
 	"github.com/line/line-bot-sdk-go/linebot"
 	"database/sql"
 	_"github.com/go-sql-driver/mysql"
@@ -14,7 +13,6 @@ import (
 傳入使用者MID
 回傳使用者是否正在遊戲
 */
-var bot *linebot.Client
 func UserGamming(MID string) bool{
 	var GameID int
 	GameID = 0;
