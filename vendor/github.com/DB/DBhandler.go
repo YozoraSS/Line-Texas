@@ -12,6 +12,8 @@ import(
 傳入使用者MID
 回傳使用者是否正在遊戲
 */
+var bot *linebot.Client
+bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 func UserGamming(MID string) bool{
 	var GameID int
 	GameID = 0;
