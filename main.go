@@ -58,11 +58,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			bot.SendText([]string{content.From}, "請輸入您的暱稱")
 			db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 1, "菜鳥", info[0].PictureURL)
 			}
-		}
-		prof,_ := bot.GetUserProfile([]string{content.From})
+			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
 		text, _ := content.TextContent()
 		bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
+		}
+		
+		/*
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText{ // content type : text
 			text, _ := content.TextContent()
 			prof,_ := bot.GetUserProfile([]string{content.From})
@@ -189,6 +191,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db.Exec("INSERT INTO database1234.linebotsticker VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, sticker.PackageID, sticker.ID, sticker.Version)
 			db.Close()
 		}
+		*/
 		
 		
 	}
