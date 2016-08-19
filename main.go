@@ -59,7 +59,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			if content.ContentType == linebot.ContentTypeText{ // content type : text
 				text, _ := content.TextContent()
-				bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
+				var nickname string
+				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
+				//bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
+				bot.SendText([]string{os.Getenv("mymid")}, nickname+" :\n"+text.Text) // sent to tester
 				db.Exec("INSERT INTO sql6131889.text (MID, Text)VALUES (?, ?)", info[0].MID, text.Text)
 				var S int
 				db.QueryRow("SELECT UserStatus FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
@@ -137,15 +140,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				}else if S == 400{
-					var nn string
-					db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nn)
-					if nn == ""{
-						db.Exec("INSERT INTO sql6131889.User (UserNickName) VALUES (?)", text.Text)
-					}else{
-						db.Exec("UPDATE sql6131889.User SET UserNickName = ? WHERE MID = ?", text.Text, content.From)
-						var temp string
-						db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&temp)
-						bot.SendText([]string{content.From}, "Your nick name now is "+temp)
+					db.Exec("UPDATE sql6131889.User SET UserNickName = ? WHERE MID = ?", text.Text, content.From)
+					var temp string
+					db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&temp)
+					bot.SendText([]string{content.From}, "Your nick name now is "+temp)
 					}
 					db.Exec("INSERT INTO sql6131889.User (UserStatus) VALUES (?)", 10)
 				}
