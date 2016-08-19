@@ -65,7 +65,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			info := prof.Contacts
 			bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
-			db.Exec("INSERT INTO sql6131889.text VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
+			db.Exec("INSERT INTO sql6131889.text VALUES (?, ?)", info[0].MID, text.Text)
 			var S string
 			db.QueryRow("SELECT Status FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
 			if S == "default"{
