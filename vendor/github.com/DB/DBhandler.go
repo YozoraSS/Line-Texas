@@ -88,9 +88,9 @@ func InRoomJoinGame(MID string){
 	}else{
 		var playerInGame string
 		db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&playerInGame)
+		var nextPlayer int
 		if playerInGame == "" {
 			row,_ := db.Query("SELECT PlayerX FROM sql6131889.GameAction WHERE GameID = ?", GID)
-			var nextPlayer int
 			for row.Next() {
 				row.Scan(&nextPlayer)
 			}
