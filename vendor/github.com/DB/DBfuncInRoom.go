@@ -10,11 +10,6 @@ import (
 	"database/sql"
 	_"github.com/go-sql-driver/mysql"
 )
-/*
-傳入使用者MID
-回傳使用者是否正在遊戲
-*/
-var bot *linebot.Client
 
 func InRoomInst(MID string){
 	/*strID := os.Getenv("ChannelID")
@@ -130,4 +125,27 @@ func InRoomJoinGame(MID string){
 		}
 	}
 	db.Close()
+}
+func InRoomReset(MID string){
+	strID := os.Getenv("ChannelID")
+	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
+	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
+	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
+	var haveGame string
+	var RID string
+	var R string
+	var GID string
+	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
+	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
+	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer1 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer2 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer3 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer4 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer5 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer6 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer7 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer8 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer9 = ? WHERE ID = ?", NULL, GID)
+	db.Exec("UPDATE sql6131889.Game SET GamePlayer10 = ? WHERE ID = ?", NULL, GID)
 }
