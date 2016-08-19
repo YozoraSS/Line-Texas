@@ -127,6 +127,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
 						bot.SendText([]string{content.From}, "Left chatroom:\n"+R)
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
+					}else if text.Text == "!set"{
+						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
+						bot.SendText([]string{content.From}, "Left to 10")
 					}else{
 						var R string
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
