@@ -3,8 +3,14 @@
 他手上有哪兩張牌
 */
 package DB
-import(
+import (
+	//"fmt"
+	//"log"
+	//"math/rand" rand.Intn(100)
+	"net/http"
 	"os"
+	"strconv"
+	"github.com/line/line-bot-sdk-go/linebot"
 	"database/sql"
 	_"github.com/go-sql-driver/mysql"
 )
