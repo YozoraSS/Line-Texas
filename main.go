@@ -56,7 +56,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if M == ""{ // new user
 			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
-			bot.SendText([]string{content.From}, "Welcome!")
+			bot.SendText([]string{content.From}, "歡迎!")
 			bot.SendText([]string{content.From}, "請輸入您的暱稱")
 			db.Exec("INSERT INTO database1234.linebotuser VALUES (?, ?, ?, ?)", info[0].MID, info[0].DisplayName, info[0].PictureURL, "default")
 			db.Close()
@@ -76,15 +76,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if S == "default"{
 				if text.Text == "!加入房間" { // cheak if enter commands
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "joining", content.From)
-					bot.SendText([]string{content.From}, "Please enter chatroom number:")
+					bot.SendText([]string{content.From}, "請輸入房間號碼:")
 					db.Close()
 				}else if text.Text == "!開新房間" {
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "creating", content.From)
-					bot.SendText([]string{content.From}, "Please enter chatroom number:")
+					bot.SendText([]string{content.From}, "請輸入新房間名字(純數字):")
 				}else{
 					db.Close()
-					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n"+"系統指令提示:")
-					bot.SendText([]string{content.From}, "!開新房間\n"+"!加入房間\n"+"!離開房間")
+					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n"+"系統指令提示:\n!開新房間\n"+"!加入房間\n"+"!離開房間")
 				}
 			}else if S == "creating"{
 				var rn string
