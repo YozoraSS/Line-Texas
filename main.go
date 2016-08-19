@@ -61,14 +61,14 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText{ // content type : text
+			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			text, _ := content.TextContent()
 			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
-			var nn String
+			var nn string
 			db.QueryRow("SELECT MID FROM sql6131889.User WHERE UserNickName = ?", content.From).Scan(&nn)
 			bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
 			bot.SendText([]string{os.Getenv("mymid")}, "測試暱稱\n"+nn+" :\n"+text.Text) 
-			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO sql6131889.text (MID, Text) VALUES (?, ?)", info[0].MID, text.Text)
 			var S string
 			//db.QueryRow("SELECT Status FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
