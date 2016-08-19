@@ -60,6 +60,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			if content.ContentType == linebot.ContentTypeText{ // content type : text
 				text, _ := content.TextContent()
 				var nickname string
+				var rm int
+				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
 				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
 				//bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
 				bot.SendText([]string{os.Getenv("mymid")}, nickname+" :\n"+text.Text) // sent to tester
@@ -147,7 +149,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					var temp string
 					db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&temp)
 					bot.SendText([]string{content.From}, "Your nick name now is "+temp)
-					db.Exec("INSERT INTO sql6131889.User (UserStatus) VALUES (?)", 10)
+					db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
 				}
 			}else if content.ContentType == linebot.ContentTypeSticker{ // content type : sticker
 				sticker, _ := content.StickerContent()
