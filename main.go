@@ -56,22 +56,32 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			info := prof.Contacts
 			bot.SendText([]string{content.From}, "歡迎!")
 			bot.SendText([]string{content.From}, "請輸入您的暱稱")
-			db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 1, "菜鳥", info[0].PictureURL)
+			text, _ := content.TextContent()
+			db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserNickName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text, 1, "菜鳥", info[0].PictureURL)
 			}
 		}
 		if content != nil && content.IsMessage && content.ContentType == linebot.ContentTypeText{ // content type : text
 			text, _ := content.TextContent()
 			prof,_ := bot.GetUserProfile([]string{content.From})
 			info := prof.Contacts
+			var nn String
+			db.QueryRow("SELECT MID FROM sql6131889.User WHERE UserNickName = ?", content.From).Scan(&nn)
 			bot.SendText([]string{os.Getenv("mymid")}, "測試\n"+info[0].DisplayName+" :\n"+text.Text) // sent to garylai
+			bot.SendText([]string{os.Getenv("mymid")}, "測試暱稱\n"+nn+" :\n"+text.Text) 
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO sql6131889.text (MID, Text) VALUES (?, ?)", info[0].MID, text.Text)
 			var S string
-			db.QueryRow("SELECT Status FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
+			//db.QueryRow("SELECT Status FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
+			S = "default"
 			if S == "default"{
 				if text.Text == "!提示" {
 					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n您目前位於大廳\n系統指令提示:\n!開新房間\n!進入房間\n")
-				}}/*else{
+				}else if text.Text == "!更改暱稱"{
+					bot.SendText([]string{content.From}, "請輸入您的暱稱")
+					text, _ := content.TextContent()
+					db.Exec("UPDATE database1234.linebotuser SET UserNickName = ?", text.Text)
+				}else{
+			}/*else{
 				if text.Text == "!進入房間" { // cheak if enter commands
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "joining", content.From)
 					bot.SendText([]string{content.From}, "請輸入房間號碼:")
@@ -81,10 +91,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					bot.SendText([]string{content.From}, "請輸入新房間名字(純數字):")
 				}else if text.Text == "!提示" {
 					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n您目前位於大廳\n系統指令提示:\n!開新房間\n!進入房間\n")
-				}else{
+				}else{*/
 					db.Close()
 					bot.SendText([]string{content.From}, "請善用系統指令:\n!提示")
-				}
+				}/*
 			}else if S == "creating"{
 				var rn string
 				db.QueryRow("SELECT roomnum FROM database1234.chatroom WHERE roomnum = ?", text.Text).Scan(&rn)
