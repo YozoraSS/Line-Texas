@@ -54,19 +54,15 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			var M string
 			db.QueryRow("SELECT MID FROM sql6131889.User WHERE MID = ?", content.From).Scan(&M)
 			if M == ""{ // new user
-				bot.SendText([]string{content.From}, "Welcome!") // put user profile into database
-				db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 10, "菜鳥", info[0].PictureURL)		
-				bot.SendText([]string{content.From}, "Please enter your nick name:")
-				db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 400, content.From)
+			bot.SendText([]string{content.From}, "Welcome!") // put user profile into database
+			db.Exec("INSERT INTO sql6131889.User (MID, UserName, UserStatus, UserTitle, UserPicture) VALUES (?, ?, ?, ?, ?)", info[0].MID, info[0].DisplayName, 10, "菜鳥", info[0].PictureURL)
+			bot.SendText([]string{content.From}, "Please enter your nick name:")
+			db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 400, content.From)
 			}
 			if content.ContentType == linebot.ContentTypeText{ // content type : text
 				text, _ := content.TextContent()
-				var nickname string
-				db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nickname)
-				//bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
-				bot.SendText([]string{os.Getenv("mymid")}, nickname+" :\n"+text.Text+"\nMID = "+info[0].MID) // sent to tester
+				bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" :\n"+text.Text) // sent to tester
 				db.Exec("INSERT INTO sql6131889.text (MID, Text)VALUES (?, ?)", info[0].MID, text.Text)
-				bot.SendText([]string{os.Getenv("mymid")}, "after")
 				var S int
 				db.QueryRow("SELECT UserStatus FROM sql6131889.User WHERE MID = ?", content.From).Scan(&S) // get user status
 				if S == 10{
@@ -79,8 +75,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					}else if text.Text == "!changenickname"{
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 400, content.From)
 						bot.SendText([]string{content.From}, "Please enter nick name:")
-					}else if text.Text == "!reset"{
-						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 1000, content.From)
 					}else{
 						bot.SendText([]string{content.From}, "Hi,"+info[0].DisplayName+"!\n"+"These are my commands:")
 						bot.SendText([]string{content.From}, "!createchatroom\n"+"!joinchatroom\n"+"!leavechatroom\n"+"!changenickname")
@@ -104,12 +98,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					bot.SendText([]string{content.From}, "Room: "+rn+"\ncreated")
 				}else if S == 11{
 					var pw string
-					db.QueryRow("SELECT RoomPass FROM sql6131889.User WHERE RoomName = ?", text.Text).Scan(&pw)
+					db.QueryRow("SELECT RoomPass FROM sql6131889.Room WHERE RoomName = ?", text.Text).Scan(&pw)
 					if pw == ""{
 						bot.SendText([]string{content.From}, "Chatroom : "+text.Text+"\ndoes not exist")
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
 					}else{
-						db.Exec("INSERT INTO sql6131889.User (UserStatus, UserRoom)VALUES (?, ?)", 14, text.Text)
+						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 14, content.From)
+						db.Exec("UPDATE sql6131889.User SET UserRoom = ? WHERE MID = ?", text.Text, content.From)
 						bot.SendText([]string{content.From}, "Please enter chatroom password:")
 					}
 				}else if S == 14{
@@ -130,18 +125,15 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
 						bot.SendText([]string{content.From}, "Left chatroom:\n"+R)
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
-					}else if text.Text == "!set"{
-						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
-						bot.SendText([]string{content.From}, "Left to 10")
 					}else{
 						var R string
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
-						row,_ := db.Query("SELECT MID FROM sql6131889.User WHERE roomnum = ? AND UserStatus = ?", R, 1000)
+						row,_ := db.Query("SELECT MID FROM sql6131889.User WHERE UserRoom = ? AND UserStatus = ?", R, 1000)
 						for row.Next() {
 							var mid1 string
 							row.Scan(&mid1)
 							if mid1 != content.From{
-								bot.SendText([]string{mid1}, nickname+":\n"+text.Text)
+								bot.SendText([]string{mid1}, info[0].DisplayName+":\n"+text.Text)
 							}
 						}
 					}
@@ -153,11 +145,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
 				}
 			}else if content.ContentType == linebot.ContentTypeSticker{ // content type : sticker
-				sticker, _ := content.StickerContent()
-				bot.SendSticker([]string{content.From}, 7, 1, 100)
-				bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" sent a sticker") // sent to tester
-				db.Exec("INSERT INTO sql6131889.Stiker (MID, PackageID, StickerID, Version)VALUES (?, ?, ?, ?)", info[0].MID, sticker.PackageID, sticker.ID, sticker.Version)
+			sticker, _ := content.StickerContent()
+			bot.SendSticker([]string{content.From}, 7, 1, 100)
+			bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" sent a sticker") // sent to tester
+			db.Exec("INSERT INTO sql6131889.Stiker (MID, PackageID, StickerID, Version)VALUES (?, ?, ?, ?)", info[0].MID, sticker.PackageID, sticker.ID, sticker.Version)
 			}
 		}
+		db.Close()
 	}
 }
