@@ -63,7 +63,7 @@ func InRoomNewGame(MID string){
 	if haveGame == ""{
 		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, MID, "0", 0)
 		
-		db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 20, , 0)
+		db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 20, 0, 0)
 		bot.SendText([]string{MID}, "You created a new game")
 	}else{
 		bot.SendText([]string{MID}, "There is already a game in this room!!")
