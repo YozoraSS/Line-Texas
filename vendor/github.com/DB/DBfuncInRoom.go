@@ -80,7 +80,7 @@ func InRoomJoinGame(MID string){
 			nextPlayer = 50
 		}
 		if nextPlayer <= 29 {
-			db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 20, nextPlayer, 0)
+			db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, nextPlayer, 0, 0)
 			if nextPlayer == 21 {
 				db.Exec("UPDATE sql6131889.Game SET GamePlayer2 = ? WHERE GID = ?", MID, GID)
 				bot.SendText([]string{MID}, "You are Player2")
