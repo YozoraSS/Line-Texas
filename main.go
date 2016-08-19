@@ -144,14 +144,13 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					var temp string
 					db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&temp)
 					bot.SendText([]string{content.From}, "Your nick name now is "+temp)
-					}
 					db.Exec("INSERT INTO sql6131889.User (UserStatus) VALUES (?)", 10)
 				}
 			}else if content.ContentType == linebot.ContentTypeSticker{ // content type : sticker
-			sticker, _ := content.StickerContent()
-			bot.SendSticker([]string{content.From}, 7, 1, 100)
-			bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" sent a sticker") // sent to tester
-			db.Exec("INSERT INTO sql6131889.Stiker (MID, PackageID, StickerID, Version)VALUES (?, ?, ?, ?)", info[0].MID, sticker.PackageID, sticker.ID, sticker.Version)
+				sticker, _ := content.StickerContent()
+				bot.SendSticker([]string{content.From}, 7, 1, 100)
+				bot.SendText([]string{os.Getenv("mymid")}, info[0].DisplayName+" sent a sticker") // sent to tester
+				db.Exec("INSERT INTO sql6131889.Stiker (MID, PackageID, StickerID, Version)VALUES (?, ?, ?, ?)", info[0].MID, sticker.PackageID, sticker.ID, sticker.Version)
 			}
 		}
 	}
