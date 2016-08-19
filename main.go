@@ -82,7 +82,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "creating", content.From)
 					bot.SendText([]string{content.From}, "請輸入新房間名字(純數字):")
 				}else if text.Text == "!提示" {
-					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!您目前位於大廳\n"+"系統指令提示:\n!開新房間\n"+"!加入房間\n"+"!離開房間")
+					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n您目前位於大廳\n"+"系統指令提示:\n!開新房間\n"+"!加入房間\n"+"!離開房間")
 				}else{
 					db.Close()
 					bot.SendText([]string{content.From}, "請善用系統指令:\n!提示")
