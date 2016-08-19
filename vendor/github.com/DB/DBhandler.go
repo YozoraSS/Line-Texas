@@ -30,7 +30,7 @@ func InRoomInst(MID string){
 	var haveGame string
 	var RID string
 	var R string
-	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
+	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.User WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
@@ -45,7 +45,7 @@ func InRoomNewGame(MID string){
 	var haveGame string
 	var RID string
 	var R string
-	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
+	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
@@ -61,13 +61,13 @@ func InRoomJoinGame(MID string){
 	var haveGame string
 	var RID string
 	var R string
-	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
+	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
 		bot.SendText([]string{content.From}, "Please create a new game")
 	}else{
-		db.Exec("UPDATE sql6131889.Game SET UserStatus = ? WHERE MID = ?", 10, content.From)
+		db.Exec("UPDATE sql6131889.Game SET UserStatus = ? WHERE MID = ?", 10, MID)
 	}
 	db.Close()
 }
