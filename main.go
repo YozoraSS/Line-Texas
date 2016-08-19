@@ -58,7 +58,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			info := prof.Contacts
 			bot.SendText([]string{content.From}, "Welcome!")
 			bot.SendText([]string{content.From}, "請輸入您的暱稱")
-			text, _ := content.TextContent()
 			db.Exec("INSERT INTO database1234.linebotuser VALUES (?, ?, ?, ?)", info[0].MID, info[0].DisplayName, info[0].PictureURL, "default")
 			db.Close()
 		}else{
