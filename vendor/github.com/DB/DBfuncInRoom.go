@@ -150,4 +150,5 @@ func InRoomReset(MID string){
 	db.Exec("UPDATE sql6131889.Game SET GamePlayer8 = ? WHERE ID = ?", "NULL", GID)
 	db.Exec("UPDATE sql6131889.Game SET GamePlayer9 = ? WHERE ID = ?", "NULL", GID)
 	db.Exec("UPDATE sql6131889.Game SET GamePlayer10 = ? WHERE ID = ?", "NULL", GID)
+	bot.SendText([]string{MID}, "room is reseted")
 }
