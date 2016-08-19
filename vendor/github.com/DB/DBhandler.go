@@ -29,7 +29,7 @@ func UserGamming(MID string) bool{
 
 }
 func InRoomInst(MID string){
-	strID := os.Getenv("ChannelID")
+	/*strID := os.Getenv("ChannelID")
 	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
@@ -44,7 +44,8 @@ func InRoomInst(MID string){
 	}else{
 		bot.SendText([]string{MID}, "You can use these instruction:\n!leavechatroom")
 	}
-	db.Close()
+	db.Close()*/
+	bot.SendText([]string{MID}, "You can use these instruction:\n!leavechatroom\n!newgame\n!joingame")
 }
 func InRoomNewGame(MID string){
 	strID := os.Getenv("ChannelID")
