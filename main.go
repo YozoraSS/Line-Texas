@@ -140,11 +140,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 					bot.SendText([]string{content.From}, "已離開房間:\n"+N)
 					db.Exec("DELETE FROM database1234.chatroomuser WHERE MID = ?", content.From)
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "default", content.From)
-				}
-				else if text.Text == "!提示"{
+				}else if text.Text == "!提示"{
 					bot.SendText([]string{content.From}, "系統指令提示:\n!建立新牌局\n!進入牌局\n!離開牌局\n!離開房間")
-				}
-				else if text.Text == "!建立新牌局"{
+				}else if text.Text == "!建立新牌局"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
 					row,_ := db.Query("SELECT MID FROM database1234.chatroomuser WHERE roomnum = ?", N)
@@ -154,8 +152,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 建立新牌局")
 					}
 					//把房間state改成遊戲中
-				}
-				else if text.Text == "!進入牌局"{
+				}else if text.Text == "!進入牌局"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
 					row,_ := db.Query("SELECT MID FROM database1234.chatroomuser WHERE roomnum = ?", N)
@@ -165,8 +162,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 進入牌局")
 					}
 					//把玩家state改成playing //S == "playing"
-				}
-				else{
+				}else{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
 					row,_ := db.Query("SELECT MID FROM database1234.chatroomuser WHERE roomnum = ?", N)
