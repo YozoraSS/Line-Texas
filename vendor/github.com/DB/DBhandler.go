@@ -13,7 +13,6 @@ import(
 回傳使用者是否正在遊戲
 */
 var bot *linebot.Client
-bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 func UserGamming(MID string) bool{
 	var GameID int
 	GameID = 0;
@@ -28,6 +27,7 @@ func UserGamming(MID string) bool{
 
 }
 func InRoomInst(MID string){
+	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
 	var RID string
@@ -43,6 +43,7 @@ func InRoomInst(MID string){
 	db.Close()
 }
 func InRoomNewGame(MID string){
+	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
 	var RID string
@@ -59,6 +60,7 @@ func InRoomNewGame(MID string){
 	db.Close()
 }
 func InRoomJoinGame(MID string){
+	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 	var haveGame string
 	var RID string
