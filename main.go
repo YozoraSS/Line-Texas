@@ -72,6 +72,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
 			db.Exec("INSERT INTO database1234.linebottext VALUES (?, ?, ?)", info[0].MID, info[0].DisplayName, text.Text)
 			var S string
+			var G string
 			db.QueryRow("SELECT Status FROM database1234.linebotuser WHERE MID = ?", content.From).Scan(&S) // get user status
 			if S == "default"{
 				if text.Text == "!加入房間" { // cheak if enter commands
@@ -81,9 +82,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}else if text.Text == "!開新房間" {
 					db.Exec("UPDATE database1234.linebotuser SET Status = ? WHERE MID = ?", "creating", content.From)
 					bot.SendText([]string{content.From}, "請輸入新房間名字(純數字):")
+				}else if text.Text == "!提示" {
+					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!您目前位於大廳\n"+"系統指令提示:\n!開新房間\n"+"!加入房間\n"+"!離開房間")
 				}else{
 					db.Close()
-					bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n"+"系統指令提示:\n!開新房間\n"+"!加入房間\n"+"!離開房間")
+					bot.SendText([]string{content.From}, "請善用系統指令:\n!提示")
 				}
 			}else if S == "creating"{
 				var rn string
@@ -132,6 +135,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				db.Close()
 			}else if S == "chatting"{
+				text.Text = "!提示"
 				if text.Text == "!離開房間"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
@@ -148,8 +152,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						var mid1 string
 						row.Scan(&mid1)
 						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 建立新牌局")
+						bot.SendText([]string{mid1}, "玩家: "+info[0].DisplayName+" 進入牌局")
 					}
 					//把房間state改成遊戲中
+					//把此玩家state改成playing //S == "playing"
 				}else if text.Text == "!進入牌局"{
 					var N string
 					db.QueryRow("SELECT roomnum FROM database1234.chatroomuser WHERE MID = ?", content.From).Scan(&N)
