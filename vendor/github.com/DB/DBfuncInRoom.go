@@ -47,9 +47,9 @@ func InRoomNewGame(MID string){
 	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	if haveGame == ""{
-		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 100, 0, MID, "0", 0)
-		
+		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 1, 0, MID, "0", 0)
 		db.Exec("INSERT INTO sql6131889.GameAction (MID, GameID, PlayerX, Action, Cancel) VALUE (?, ?, ?, ?, ?)", MID, GID, 1, 0, 0)
+		db.Exec("UPDATE sql6131889.Room SET RoomStatus = ? WHERE RoomName = ?", 101, R)
 		db.Exec("UPDATE sql6131889.Game SET PlayerNum = ? WHERE ID = ?", 1, GID)
 		bot.SendText([]string{MID}, "You created a new game")
 		bot.SendText([]string{MID}, "You are Player1")
@@ -63,15 +63,15 @@ func InRoomJoinGame(MID string){
 	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
 	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
-	var haveGame string
+	var haveGame int
 	var RID string
 	var R string
 	var GID string
 	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
-	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
-	if haveGame == ""{
+	db.QueryRow("SELECT RoomStatus FROM sql6131889.Room WHERE RoomName = ?", R).Scan(&haveGame)
+	if haveGame == 100 {
 		bot.SendText([]string{MID}, "Please create a new game use instruction:\n!newgame")
 	}else{
 		var playerInGame string
@@ -128,6 +128,43 @@ func InRoomJoinGame(MID string){
 		}
 	}
 	db.Close()
+}
+func InRoomStartGame(MID string){
+	strID := os.Getenv("ChannelID")
+	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
+	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
+	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
+	var RID string
+	var R string
+	var GID string
+	var haveGame int
+	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
+	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
+	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
+	var playerInGame string
+	db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&playerInGame)
+	db.QueryRow("SELECT RoomStatus FROM sql6131889.Room WHERE RoomName = ?", R).Scan(&haveGame)
+	if haveGame == 101 {
+		if playerInGame != ""{
+			var gameActionCancel int
+			db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&gameActionCancel)
+			if gameActionCancel != 1{
+					var waitingForStart int
+					db.QueryRow("SELECT GameStatus FROM sql6131889.Game WHERE ID = ?", GID).Scan(&waitingForStart)
+					if waitingForStart == 1 {
+						db.Exec("UPDATE sql6131889.Game SET GameStatus = ? WHERE ID = ?", 2, GID) //starting game now
+					}else{
+						bot.SendText([]string{MID}, "The game is already started!!")
+					}
+			}else{
+				bot.SendText([]string{MID}, "You are not in the game!!")
+			}
+		}else{
+			bot.SendText([]string{MID}, "You are not in the game!!")
+		}
+	}else{
+		bot.SendText([]string{MID}, "This room have no game!!")
+	} 
 }
 func InRoomReset(MID string){
 	strID := os.Getenv("ChannelID")
