@@ -79,7 +79,7 @@ func InRoomJoinGame(MID string){
 		var nextPlayer int
 		var gameActionCancel int
 		db.QueryRow("SELECT Cancel FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&gameActionCancel)
-		row,_ := db.Query("SELECT Cancel FROM sql6131889.Game WHERE MID = ?", MID)
+		row,_ := db.Query("SELECT Cancel FROM sql6131889.GameAction WHERE MID = ?", MID)
 		for row.Next() { 
 			row.Scan(&playerInGame)
 		}
