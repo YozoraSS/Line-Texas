@@ -128,7 +128,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						var R string
 						db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", content.From).Scan(&R)
 						var playerInGame string
-						db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&playerInGame)
+						db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", content.From).Scan(&playerInGame)
 						if playerInGame != "" {
 							DB.CancelGameAction(content.From)
 							DB.CancelGame(content.From)
@@ -147,7 +147,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						DB.InRoomStartGame(content.From)
 					}else if text.Text == "!quitgame"{
 						var playerInGame string
-						db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&playerInGame)
+						db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", content.From).Scan(&playerInGame)
 						if playerInGame != "" {
 							DB.CancelGameAction(content.From)
 							DB.CancelGame(content.From)
