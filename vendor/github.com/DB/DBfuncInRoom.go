@@ -44,7 +44,7 @@ func InRoomNewGame(MID string){
 	var gameCancel int
 	row,_ := db.QueryRow("SELECT Cancel FROM sql6131889.Game WHERE RoomID = ?", RID)
 	for row.Next() { 
-		db.QueryRow("SELECT Cancel FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&gameCancel)
+		row.Scan(&gameCancel)
 	}
 	if haveGame == "" || gameCancel == 1 {
 		db.Exec("INSERT INTO sql6131889.Game (GameName, RoomID, GameStatus, GameTokens, GamePlayer1, GameMaster, PlayerNum, Cancel) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", "TexasPoker", RID, 1, 0, MID, "0", 1, 0)	
@@ -79,6 +79,10 @@ func InRoomJoinGame(MID string){
 		var nextPlayer int
 		var gameActionCancel int
 		db.QueryRow("SELECT Cancel FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&gameActionCancel)
+		row,_ := db.QueryRow("SELECT Cancel FROM sql6131889.Game WHERE MID = ?", MID)
+		for row.Next() { 
+			row.Scan(&playerInGame)
+		}
 		if playerInGame == "" || gameActionCancel == 1{
 			db.QueryRow("SELECT PlayerNum FROM sql6131889.Game WHERE ID = ?", GID).Scan(&nextPlayer)
 			nextPlayer = nextPlayer+1
