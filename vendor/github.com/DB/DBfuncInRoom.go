@@ -77,11 +77,14 @@ func InRoomJoinGame(MID string){
 		var playerInGame string
 		db.QueryRow("SELECT MID FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&playerInGame)
 		var nextPlayer int
-		if playerInGame == "" {
+		var gameActionCancel int
+		db.QueryRow("SELECT Cancel FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&gameActionCancel)
+		if playerInGame == "" || gameActionCancel == 1{
 			row,_ := db.Query("SELECT PlayerX FROM sql6131889.GameAction WHERE GameID = ?", GID)
 			for row.Next() {
 				row.Scan(&nextPlayer)
 			}
+			db.QueryRow("SELECT PlayerNum FROM sql6131889.Game WHERE ID = ?", GID).Scan(&nextPlayer)
 			nextPlayer = nextPlayer+1
 		}else{
 			nextPlayer = 50
@@ -152,7 +155,13 @@ func InRoomStartGame(MID string){
 					var waitingForStart int
 					db.QueryRow("SELECT GameStatus FROM sql6131889.Game WHERE ID = ?", GID).Scan(&waitingForStart)
 					if waitingForStart == 1 {
-						db.Exec("UPDATE sql6131889.Game SET GameStatus = ? WHERE ID = ?", 2, GID) //starting game now
+						var gamerNum int
+						db.QueryRow("SELECT PlayerNum FROM sql6131889.Game WHERE ID = ?", GID).Scan(&gamerNum)
+						if gamerNum > 1 {
+							db.Exec("UPDATE sql6131889.Game SET GameStatus = ? WHERE ID = ?", 2, GID) //starting game now
+						}else{
+							bot.SendText([]string{MID}, "The game can't be starting below 2 players!!")
+						}
 					}else{
 						bot.SendText([]string{MID}, "The game is already started!!")
 					}
