@@ -42,7 +42,7 @@ func InRoomNewGame(MID string){
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT RoomID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&haveGame)
 	var gameCancel int
-	row,_ := db.QueryRow("SELECT Cancel FROM sql6131889.Game WHERE RoomID = ?", RID)
+	row,_ := db.Query("SELECT Cancel FROM sql6131889.Game WHERE RoomID = ?", RID)
 	for row.Next() { 
 		row.Scan(&gameCancel)
 	}
@@ -79,11 +79,11 @@ func InRoomJoinGame(MID string){
 		var nextPlayer int
 		var gameActionCancel int
 		db.QueryRow("SELECT Cancel FROM sql6131889.GameAction WHERE MID = ?", MID).Scan(&gameActionCancel)
-		row,_ := db.QueryRow("SELECT Cancel FROM sql6131889.Game WHERE MID = ?", MID)
+		row,_ := db.Query("SELECT Cancel FROM sql6131889.Game WHERE MID = ?", MID)
 		for row.Next() { 
 			row.Scan(&playerInGame)
 		}
-		if playerInGame == "" || gameActionCancel == 1{
+		if playerInGame == "" || gameActionCancel == 0{
 			db.QueryRow("SELECT PlayerNum FROM sql6131889.Game WHERE ID = ?", GID).Scan(&nextPlayer)
 			nextPlayer = nextPlayer+1
 		}else{
