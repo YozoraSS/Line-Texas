@@ -150,6 +150,7 @@ func InRoomStartGame(MID string){
 						db.QueryRow("SELECT PlayerNum FROM sql6131889.Game WHERE ID = ?", GID).Scan(&gamerNum)
 						if gamerNum > 1 {
 							db.Exec("UPDATE sql6131889.Game SET GameStatus = ? WHERE ID = ?", 2, GID) //starting game now
+							bot.SendText([]string{MID}, "== START THE GAME ==")
 						}else{
 							bot.SendText([]string{MID}, "The game can't be starting below 2 players!!")
 						}
@@ -166,7 +167,7 @@ func InRoomStartGame(MID string){
 		bot.SendText([]string{MID}, "This room have no game!!")
 	} 
 }
-func InRoomReset(MID string){
+func CancelGameAction(MID string){
 	strID := os.Getenv("ChannelID")
 	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
@@ -177,15 +178,18 @@ func InRoomReset(MID string){
 	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
 	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
 	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer1 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer2 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer3 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer4 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer5 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer6 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer7 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer8 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer9 = ? WHERE ID = ?", "", GID)
-	db.Exec("UPDATE sql6131889.Game SET GamePlayer10 = ? WHERE ID = ?", "", GID)
-	bot.SendText([]string{MID}, "room is reseted")
+	db.Exec("UPDATE sql6131889.GameAction SET Cancel = ? WHERE GameID = ?", 1, GID)
+}
+func CancelGame(MID string){
+	strID := os.Getenv("ChannelID")
+	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
+	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
+	db,_ := sql.Open("mysql", os.Getenv("dbacc")+":"+os.Getenv("dbpass")+"@tcp("+os.Getenv("dbserver")+")/")
+	var RID string
+	var R string
+	var GID string
+	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
+	db.QueryRow("SELECT ID FROM sql6131889.Room WHERE  RoomName = ?", R).Scan(&RID)
+	db.QueryRow("SELECT ID FROM sql6131889.Game WHERE RoomID = ?", RID).Scan(&GID)
+	db.Exec("UPDATE sql6131889.Game SET Cancel = ? WHERE RoomID = ?", 1, RID)
 }
