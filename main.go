@@ -132,7 +132,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						if playerInGame != "" {
 							DB.CancelGameAction(content.From)
 							DB.CancelGame(content.From)
-							bot.SendText([]string{content.From}, "You quit this game...")
+							bot.SendText([]string{content.From}, "You quit the game...")
 						}
 						bot.SendText([]string{content.From}, "Left chatroom:\n"+R)
 						db.Exec("UPDATE sql6131889.User SET UserStatus = ? WHERE MID = ?", 10, content.From)
@@ -151,7 +151,6 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 						if playerInGame != "" {
 							DB.CancelGameAction(content.From)
 							DB.CancelGame(content.From)
-							bot.SendText([]string{content.From}, "You quit this game...")
 						}else{
 							bot.SendText([]string{content.From}, "You are not in the game!!")
 						}
