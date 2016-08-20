@@ -13,9 +13,11 @@ func InRoomInst(MID string){
 	strID := os.Getenv("ChannelID")
 	numID, _ := strconv.ParseInt(strID, 10, 64) // string to integer
 	bot, _ = linebot.NewClient(numID, os.Getenv("ChannelSecret"), os.Getenv("MID"))
+	var nn string
+	db.QueryRow("SELECT UserNickName FROM sql6131889.User WHERE MID = ?", content.From).Scan(&nn)
 	var R string
 	db.QueryRow("SELECT UserRoom FROM sql6131889.User WHERE MID = ?", MID).Scan(&R)
-	bot.SendText([]string{content.From}, "哈囉! "+info[0].DisplayName+"!\n您現在位於房間 "+R+"\n可用指令為:\n!離開房間\n!加入遊戲\n!開始遊戲\n!新遊戲")
+	bot.SendText([]string{MID}, "哈囉! "+nn+"!\n您現在位於房間 "+R+"\n可用指令為:\n!離開房間\n!加入遊戲\n!開始遊戲\n!新遊戲")
 }
 func InRoomNewGame(MID string){
 	strID := os.Getenv("ChannelID")
